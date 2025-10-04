@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRAT V1 - Quote Generator</title>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
+    body {
+      font-family: 'SF Pro Display', sans-serif;
+      background: #000;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ================== PAGE TRANSITIONS ================== */
+    .page {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* ================== START SCREEN ================== */
+    .start-screen {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #1a1a1a 0%, #000 80%);
+      text-align: center;
+      animation: fadeIn 1.2s ease;
+    }
+
+    .start-title {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #6a5cff, #9b59ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+    }
+
+    .start-subtitle {
+      font-size: 15px;
+      color: #bbb;
+      margin-bottom: 40px;
+    }
+
+    .start-btn {
+      background: linear-gradient(90deg, #6a5cff, #9b59ff);
+      border: none;
+      padding: 14px 40px;
+      border-radius: 30px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(155, 89, 255, 0.4);
+      transition: 0.3s;
+    }
+
+    .start-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #7b6dff, #b06cff);
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    /* ================== NAVBAR ================== */
+    .navbar {
+      text-align: center;
+      padding: 15px;
+      background: #111;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .navbar .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #222;
+      color: #FFD700;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* ================== MAIN PAGE ================== */
+    .container {
+      width: 90%;
+      max-width: 400px;
+      margin: 30px auto;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #6a5cff, #9b59ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #aaa;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: #111;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #bbb;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      background: #1a1a1a;
+      color: #fff;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #777;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #6a5cff, #9b59ff);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #7b6dff, #b06cff);
+    }
+
+    .result {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .result img {
+      max-width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    /* ================== TOGGLE ================== */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #444;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(90deg, #6a5cff, #9b59ff);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    /* ================== FOOTER ================== */
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ========== START PAGE ========== -->
+  <div id="startPage" class="page active start-screen">
+    <div class="start-title">BRAT GENERATOR</div>
+    <div class="start-subtitle">Create stunning iPhone-style quotes easily.</div>
+    <button class="start-btn" onclick="enterApp()">GET STARTED</button>
+  </div>
+
+  <!-- ========== MAIN PAGE ========== -->
+  <div id="mainPage" class="page">
+    <div class="navbar">
+      <span class="badge">👑 BRAT V1</span>
+    </div>
+
+    <div class="container">
+      <div class="title">BRAT GENERATOR</div>
+      <div class="subtitle">Buat iPhone-style quotes dengan mudah!</div>
+
+      <div class="card">
+        <h3 style="margin-bottom:15px; font-size:16px; color:#9b59ff;">⚙️ Pengaturan Quotes</h3>
+        
+        <div class="form-group">
+          <label for="message">💬 Pesan</label>
+          <input type="text" id="message" placeholder="Masukkan pesan...">
+        </div>
+
+        <div class="form-group">
+          <label for="battery">🔋 Baterai (0-100)</label>
+          <input type="number" id="battery" placeholder="87" min="0" max="100">
+        </div>
+
+        <div class="form-group">
+          <label for="provider">📶 Provider</label>
+          <input type="text" id="provider" placeholder="Telkomsel">
+        </div>
+
+        <div class="form-group">
+          <label for="time">⏰ Jam (Contoh: 10:30)</label>
+          <input type="text" id="time" placeholder="10:30">
+        </div>
+
+        <div class="form-group">
+          <label for="signal">📡 Sinyal</label>
+          <select id="signal">
+            <option>LTE</option>
+            <option>4G</option>
+            <option>5G</option>
+            <option>3G</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display:flex; align-items:center; justify-content:space-between;">
+          <label for="animated">🎞️ Animated</label>
+          <label class="switch">
+            <input type="checkbox" id="animated">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <button onclick="generateImage()">⚡ GENERATE</button>
+      </div>
+
+      <div class="card result" id="result"></div>
+    </div>
+
+    <footer>© 2025 Powered by Terari</footer>
+  </div>
+
+  <script>
+    // Halaman Transisi
+    function enterApp() {
+      document.getElementById("startPage").classList.remove("active");
+      setTimeout(() => {
+        document.getElementById("mainPage").classList.add("active");
+      }, 300);
+    }
+
+    function generateImage() {
+      const text = document.getElementById("message").value.trim();
+      const battery = document.getElementById("battery").value || 87;
+      const provider = document.getElementById("provider").value || "Telkomsel";
+      const time = document.getElementById("time").value || new Intl.DateTimeFormat('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(new Date());
+      const signal = document.getElementById("signal").value || "LTE";
+      const animated = document.getElementById("animated").checked;
+
+      if (!text) {
+        alert("Masukkan pesan terlebih dahulu!");
+        return;
+      }
+
+      let url = `https://brat.siputzx.my.id/iphone-quoted?time=${encodeURIComponent(time)}&batteryPercentage=${battery}&carrierName=${encodeURIComponent(provider)}&messageText=${encodeURIComponent(text)}&emojiStyle=apple&signal=${encodeURIComponent(signal)}`;
+      if (animated) url += "&animated=true";
+
+      document.getElementById("result").innerHTML = `<img src="${url}" alt="Generated Quoted">`;
+    }
+  </script>
+</body>
+</html>
